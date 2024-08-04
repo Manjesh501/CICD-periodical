@@ -54,18 +54,30 @@ This project demonstrates a complete DevOps pipeline using Jenkins and Docker fo
     - Run the Docker container.
 ![Shell code ](cont-containerization.png)
 4. Schedule the build to run every 5 minutes or desired time.
+   ```bash
+   # Generate a unique container name using the build number or a timestamp
+    CONTAINER_NAME="node-app-container-$(date +%s)"
+
+    # Stop and remove any existing container using port 8000
+    EXISTING_CONTAINER=$(docker ps -q --filter "publish=8000")
+
+    if [ ! -z "$EXISTING_CONTAINER" ]; then
+      docker stop $EXISTING_CONTAINER
+      docker rm $EXISTING_CONTAINER
+    fi
+
+    # Build the Docker image
+    docker build -t node-app-todo .
+
+    # Run the Docker container with the unique name
+    docker run -d --name $CONTAINER_NAME -p 8000:8000 node-app-todo
+
+    
+    ```
 
 ![Build log](build-log.png)
 
-### Step 4: Docker Setup
-1. Build the Docker image:
-    ```bash
-    docker build -t node-app-todo .
-    ```
-2. Run the Docker container:
-    ```bash
-    docker run -d --name node-app-container -p 8000:8000 node-app-todo
-    ```
+
 
 ## Accessing the Application
 - Access the running application via `http://<your-ec2-public-ip>:8000`.
